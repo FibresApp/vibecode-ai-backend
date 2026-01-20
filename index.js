@@ -118,7 +118,7 @@ Respond ONLY with JSON, e.g.:
 });
 
 // -----------------------------
-// Compare two photos
+// Compare two photos with focus areas
 // -----------------------------
 app.post('/api/compare-photos', async (req, res) => {
   try {
@@ -147,6 +147,7 @@ For each muscle group (Shoulders, Arms, Chest, Core, Back, Legs):
 Also provide:
 - overallSummary: short summary of overall progress
 - recommendations: an array of objects with "text" and "priority" ("high", "medium", "low")
+- focusAreas: an array of muscle groups the user should focus on next (e.g., ["Chest", "Back"])
 
 Return ONLY JSON with the following exact structure:
 {
@@ -162,6 +163,7 @@ Return ONLY JSON with the following exact structure:
   "recommendations": [
     { "text": "...", "priority": "high/medium/low" }
   ],
+  "focusAreas": ["..."],
   "daysApart": 0
 }
 ${hasFrontShot ? 'If possible, provide a bodyFat estimate range in overallSummary.' : ''}
@@ -185,7 +187,7 @@ ${hasFrontShot ? 'If possible, provide a bodyFat estimate range in overallSummar
             ]
           }
         ],
-        max_tokens: 1500
+        max_tokens: 1600
       })
     });
 
@@ -206,6 +208,9 @@ ${hasFrontShot ? 'If possible, provide a bodyFat estimate range in overallSummar
 
     // Ensure daysApart is always included
     parsed.daysApart = 0;
+
+    // Ensure focusAreas exists
+    if (!parsed.focusAreas) parsed.focusAreas = [];
 
     res.json(parsed);
   } catch (error) {
